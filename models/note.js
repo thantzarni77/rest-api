@@ -6,12 +6,15 @@ const noteSchema = new Schema(
       type: String,
       required: true,
       minLength: 3,
-      maxLength: 30,
+      maxLength: 100,
     },
     content: {
       type: String,
       required: true,
       minLength: 3,
+    },
+    cover_img: {
+      type: String,
     },
     author: {
       type: String,

@@ -14,8 +14,8 @@ router.post(
       .trim()
       .isLength({ min: 3 })
       .withMessage("Title is too short")
-      .isLength({ max: 30 })
-      .withMessage("Title cannot be longer than 30 words"),
+      .isLength({ max: 100 })
+      .withMessage("Title cannot be longer than 100 words"),
     body("content")
       .trim()
       .isLength({ min: 3 })
@@ -27,7 +27,13 @@ router.post(
 //get /notes/:id
 router.get("/notes/:id", noteController.getNote);
 
-//delete /delete:id
+//delete /delete/:id
 router.delete("/delete/:id", noteController.deleteNote);
+
+//get /edit/:id
+router.get("/edit/:id", noteController.getOldNote);
+
+//post /edit
+router.post("/edit", noteController.updateNote);
 
 module.exports = router;
