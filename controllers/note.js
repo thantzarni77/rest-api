@@ -5,10 +5,24 @@ const Note = require("../models/note");
 const { unlinkFile } = require("../utils/unlink");
 
 exports.getNotes = (req, res, next) => {
+  const currentPage = req.query.page || 1;
+  const perPage = 6;
+  let totalNotes;
+  let totalPage;
+
   Note.find()
-    .sort({ createdAt: -1 })
+    .countDocuments()
+    .then((count) => {
+      totalNotes = count;
+      totalPage = Math.ceil(totalNotes / perPage);
+      return Note.find()
+        .sort({ createdAt: -1 })
+        .skip((currentPage - 1) * perPage)
+        .limit(perPage);
+    })
+
     .then((notes) => {
-      return res.status(200).json(notes);
+      return res.status(200).json({ notes, totalPage });
     })
     .catch((err) => {
       console.log(err);
