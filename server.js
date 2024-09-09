@@ -7,6 +7,7 @@ const multer = require("multer");
 const path = require("path");
 
 const noteRoutes = require("./routes/notes");
+const authRoutes = require("./routes/auth");
 
 const app = express();
 
@@ -44,6 +45,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use(bodyParser.json());
 
+app.use(authRoutes);
 app.use(noteRoutes);
 
 mongoose
