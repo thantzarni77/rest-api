@@ -48,6 +48,7 @@ exports.createNote = (req, res, next) => {
     title,
     content,
     cover_img: cover_img ? cover_img.path : undefined,
+    author: req.userID,
   })
     .then(() => {
       return res.status(201).json({
@@ -65,6 +66,7 @@ exports.createNote = (req, res, next) => {
 exports.getNote = (req, res) => {
   const { id } = req.params;
   Note.findById(id)
+    .populate("author", "username")
     .then((note) => {
       return res.status(200).json(note);
     })
@@ -80,6 +82,11 @@ exports.deleteNote = (req, res, next) => {
   const { id } = req.params;
   Note.findById(id)
     .then((note) => {
+      if (note.author.toString() !== req.userID) {
+        return res.status(401).json({
+          message: "User not authorized",
+        });
+      }
       if (note.cover_img) {
         unlinkFile(note.cover_img);
       }
@@ -101,6 +108,11 @@ exports.getOldNote = (req, res) => {
   const { id } = req.params;
   Note.findById(id)
     .then((note) => {
+      if (note.author.toString() !== req.userID) {
+        return res.status(401).json({
+          message: "User not authorized",
+        });
+      }
       return res.status(200).json(note);
     })
     .catch((err) => {
@@ -116,6 +128,11 @@ exports.updateNote = (req, res) => {
   const cover_img = req.file;
   Note.findById(noteID)
     .then((note) => {
+      if (note.author.toString() !== req.userID) {
+        return res.status(401).json({
+          message: "User not authorized",
+        });
+      }
       note.title = title;
       note.content = content;
       if (cover_img) {

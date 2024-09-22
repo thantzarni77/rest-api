@@ -72,11 +72,39 @@ exports.login = async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    return res.status(200).json({ token, userID: userDoc._id });
+    return res
+      .status(200)
+      .json({ token, userID: userDoc._id, userEmail: userDoc.email });
   } catch (err) {
     console.log(err);
     return res.status(400).json({
       message: err.message,
+    });
+  }
+};
+
+exports.checkStatus = (req, res, next) => {
+  const authHeader = req.get("Authorizaton");
+  if (!authHeader) {
+    return res.status(401).json({
+      message: "User Not Authenticated",
+    });
+  }
+
+  const token = authHeader.split(" ")[1];
+  try {
+    const tokenMatch = jwt.verify(token, process.env.JWT_KEY);
+    if (!tokenMatch) {
+      return res.status(401).json({
+        message: "User Not Authenticated",
+      });
+    }
+    req.userID = tokenMatch.userID;
+    res.json("OK");
+    next();
+  } catch (err) {
+    return res.status(401).json({
+      message: "User Not Authenticated",
     });
   }
 };
